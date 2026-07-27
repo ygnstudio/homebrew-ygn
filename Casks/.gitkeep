@@ -1,0 +1,22 @@
+# Casks for ygnstudio tap
+# Place your Homebrew casks (.rb files) in this directory.
+# Each cask file should be named after the cask, e.g. myapp.rb
+#
+# Example cask structure:
+#
+#   cask "myapp" do
+#     version "1.0.0"
+#     sha256 "..."
+#
+#     url "https://github.com/ygnstudio/myapp/releases/download/v1.0.0/MyApp-1.0.0.dmg"
+#     name "MyApp"
+#     desc "A short description of MyApp"
+#     homepage "https://github.com/ygnstudio/myapp"
+#
+#     app "MyApp.app"
+#
+#     zap trash: [
+#       "~/Library/Preferences/com.ygnstudio.myapp.plist",
+#       "~/Library/Application Support/MyApp",
+#     ]
+#   end

@@ -1,0 +1,27 @@
+# Formulae for ygnstudio tap
+# Place your Homebrew formulae (.rb files) in this directory.
+# Each formula file should be named after the formula, e.g. mytool.rb
+#
+# Example formula structure:
+#
+#   class Mytool < Formula
+#     desc "A short description of mytool"
+#     homepage "https://github.com/ygnstudio/mytool"
+#     url "https://github.com/ygnstudio/mytool/archive/refs/tags/v1.0.0.tar.gz"
+#     sha256 "..."
+#     version "1.0.0"
+#     license "MIT"
+#
+#     # Specify dependencies if needed
+#     # depends_on "cmake" => :build
+#
+#     def install
+#       # Build and install steps
+#       system "make"
+#       bin.install "mytool"
+#     end
+#
+#     test do
+#       assert_match "1.0.0", shell_output("#{bin}/mytool --version")
+#     end
+#   end
