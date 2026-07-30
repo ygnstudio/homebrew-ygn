@@ -7,4 +7,9 @@ cask "shigong-manager" do
   homepage "https://github.com/ygnstudio/homebrew-ygn"
   depends_on arch: :arm64
   app "施工管理.app"
+
+  caveats <<~EOS
+    应用未做 Apple 公证，首次打开如被 Gatekeeper 拦截：
+      xattr -cr /Applications/施工管理.app
+  EOS
 end
