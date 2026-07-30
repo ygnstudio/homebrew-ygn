@@ -1,6 +1,6 @@
 cask "dutiui" do
   version "1.0.0"
-  sha256 "【填入你的zip文件shasum -a 256结果】"
+  sha256 "dba87580b76a292421d5bf1c466159a8721bd9094348a13524264a9a90d5acd7"
 
   url "https://github.com/ygnstudio/homebrew-ygn/releases/download/DatiUI-v#{version}/dutiui-#{version}-arm64.zip"
   desc "DutiUI 文件关联图形管理工具"
