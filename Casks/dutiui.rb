@@ -1,9 +1,9 @@
 cask "dutiui" do
   version "1.0.0"
-  sha256 "【这里替换成你zip文件算出的sha256】"
+  sha256 "【填入你的zip文件shasum -a 256结果】"
 
-  url "https://github.com/ygnstudio/homebrew-ygn/releases/download/v#{version}/dutiui-#{version}-arm64.zip"
-  desc "DutiUI - 文件关联图形化管理工具"
+  url "https://github.com/ygnstudio/homebrew-ygn/releases/download/DatiUI-v#{version}/dutiui-#{version}-arm64.zip"
+  desc "DutiUI 文件关联图形管理工具"
   name "DutiUI"
   homepage "https://github.com/ygnstudio/homebrew-ygn"
 
