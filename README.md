@@ -1,104 +1,79 @@
 # homebrew-ygn
-Homebrew tap for ygnstudio formulae and casks.
 
-## Quick Start
-Add this tap and trust repository (required for new Homebrew Tap Trust policy):
-```zsh
-brew tap ygnstudio/ygn
-brew trust ygnstudio/ygn
-Applications
-施工管理 (shigong-manager)
-Install:
-zsh
-brew install --cask ygnstudio/ygn/shigong-manager
-Upgrade:
-zsh
-brew update && brew upgrade --cask shigong-manager
-Uninstall:
-zsh
-brew uninstall --cask shigong-manager
-⚠️ Notarization missing. If Gatekeeper blocks launch, run:
-zsh
-xattr -cr /Applications/施工管理.app
-DutiUI
-Install:
-zsh
-brew install --cask ygnstudio/ygn/dutiui
-Upgrade:
-zsh
-brew update && brew upgrade --cask dutiui
-Uninstall:
-zsh
-brew uninstall --cask dutiui
-⚠️ Notarization missing. If Gatekeeper blocks launch, run:
-zsh
-xattr -cr /Applications/DutiUI.app
-Maintainer Commands
-Verify cask syntax
-zsh
-brew audit --cask ygnstudio/ygn/shigong-manager
-brew audit --cask ygnstudio/ygn/dutiui
-Reinstall for testing
-zsh
-brew reinstall --cask ygnstudio/ygn/dutiui
-View raw cask source
-zsh
-brew cat --cask ygnstudio/ygn/dutiui
-Notes
-Only supports Apple Silicon (arm64) Macs.
-Pre-release macOS versions (macOS 27+) are unsupported by Homebrew, version warnings are expected.
-When releasing new builds, update both version and sha256 inside corresponding cask file.
-plaintext
-
-如果你想要**纯中文版本**，这一版：
-```markdown
-# homebrew-ygn
-Homebrew tap for ygnstudio formulae and casks.
+[ygnstudio](https://github.com/ygnstudio) 的个人 Homebrew Tap，收录我维护的命令行工具与 macOS 应用。
 
 ## 快速开始
-添加源并信任仓库（新版Homebrew Tap Trust安全机制必需）
+
 ```zsh
 brew tap ygnstudio/ygn
-brew trust ygnstudio/ygn
-软件清单
-施工管理 shigong-manager
-安装：
-zsh
+brew trust ygnstudio/ygn   # 新版 Homebrew Tap Trust 安全机制需要信任此源
+```
+
+---
+
+## 软件清单
+
+### sc（命令行工具 · formula）
+
+在终端里用任意搜索引擎一键唤起浏览器打开结果页。不抓取网页、不发起任何网络请求，只做「关键词 URL 编码 → 模板拼接 → 打开浏览器」。
+
+```zsh
+brew install sc
+brew update && brew upgrade sc        # 升级
+brew uninstall sc                      # 卸载
+```
+
+- 源码与文档：<https://github.com/ygnstudio/sc-search>
+- 支持 Apple Silicon 与 Intel（预编译 universal 二进制，无需本地 Rust 工具链）；其他平台自动回退源码编译
+- 快速上手：`sc list` 查看内置引擎，`sc bilibili 测试` 直接搜索，`sc tui` 打开交互式管理面板
+
+### 施工管理 shigong-manager（应用 · cask）
+
+```zsh
 brew install --cask ygnstudio/ygn/shigong-manager
-升级：
-zsh
-brew update && brew upgrade --cask shigong-manager
-卸载：
-zsh
-brew uninstall --cask shigong-manager
-⚠️ 应用未完成 Apple 公证。首次打开被系统拦截，请执行：
-zsh
-xattr -cr /Applications/施工管理.app
-DutiUI
-安装：
-zsh
+brew update && brew upgrade --cask shigong-manager   # 升级
+brew uninstall --cask shigong-manager                # 卸载
+```
+
+> ⚠️ 应用未完成 Apple 公证。若 Gatekeeper 拦截启动，请执行：
+> ```zsh
+> xattr -cr /Applications/施工管理.app
+> ```
+
+### DutiUI（应用 · cask）
+
+```zsh
 brew install --cask ygnstudio/ygn/dutiui
-升级：
-zsh
-brew update && brew upgrade --cask dutiui
-卸载：
-zsh
-brew uninstall --cask dutiui
-⚠️ 应用未完成 Apple 公证。首次打开被系统拦截，请执行：
-zsh
-xattr -cr /Applications/DutiUI.app
-仓库维护调试命令
-校验 Cask 语法
-zsh
+brew update && brew upgrade --cask dutiui            # 升级
+brew uninstall --cask dutiui                         # 卸载
+```
+
+> ⚠️ 应用未完成 Apple 公证。若 Gatekeeper 拦截启动，请执行：
+> ```zsh
+> xattr -cr /Applications/DutiUI.app
+> ```
+
+---
+
+## 维护者命令
+
+```zsh
+# 校验 cask 语法
 brew audit --cask ygnstudio/ygn/shigong-manager
 brew audit --cask ygnstudio/ygn/dutiui
-强制重装用于测试
-zsh
+
+# 强制重装用于测试
 brew reinstall --cask ygnstudio/ygn/dutiui
-查看 Cask 原始代码
-zsh
+
+# 查看 formula / cask 原始源码
+brew cat sc
 brew cat --cask ygnstudio/ygn/dutiui
-重要说明
-当前仅支持 Apple Silicon（arm64）设备
-macOS 27 等预发布测试系统不受 Homebrew 官方支持，出现版本警告属于正常情况
-新版本发布时，必须同步更新对应 Cask 文件内 version 和 sha256 参数
+```
+
+---
+
+## 注意事项
+
+- 当前应用类 cask（施工管理、DutiUI）仅支持 Apple Silicon（arm64）Mac。
+- macOS 27 等预发布测试系统不受 Homebrew 官方支持，出现版本警告属于正常情况。
+- 发布新版本时，必须同步更新对应 cask / formula 文件内的 `version` 与 `sha256`。
