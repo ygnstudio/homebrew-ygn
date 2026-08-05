@@ -17,7 +17,7 @@ class Sc < Formula
   desc "Launch web searches from your terminal, with built-in AI Q&A"
   homepage "https://github.com/ygnstudio/sc-search"
   url "https://github.com/ygnstudio/sc-search/releases/download/v0.2.2/sc-0.2.2-macos-universal.tar.gz"
-  sha256 "a2a79062ccc99afaff949b7479b2a18a3b66a7db9cc8496174b7a3f31c622b68"
+  sha256 "f2f582079d2a1a8db629bf105e57f0882ae26cd9c4d5ae5205914894db810c00"
   version "0.2.2"
   license "MIT"
 
@@ -97,9 +97,10 @@ class Sc < Formula
                  shell_output("#{bin}/sc bilibili 测试 --dry-run")
 
     # 改别名后新别名生效、旧别名失效
+    # 注意：省略式下旧别名会退化成关键词交给默认引擎，要看报错得写显式 search
     assert_match "google → gg", shell_output("#{bin}/sc edit google --alias gg")
     assert_equal output, shell_output("#{bin}/sc gg 'hello world' --dry-run")
-    assert_match "未找到别名", shell_output("#{bin}/sc google test --dry-run 2>&1", 1)
+    assert_match "未找到别名", shell_output("#{bin}/sc search google test --dry-run 2>&1", 1)
 
     # 禁用后拒绝搜索
     system bin/"sc", "disable", "gg"
