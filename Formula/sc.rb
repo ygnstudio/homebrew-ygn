@@ -4,35 +4,24 @@
 # 用户安装：brew tap ygnstudio/ygn && brew install sc
 #
 # 安装策略：
-#   macOS  → 直接下载 Release 里的 universal 预编译二进制（x86_64 + arm64），秒装
-#   Linux  → 从源码 tarball 用 cargo 构建
-#   --HEAD → clone main 分支从源码构建（macOS 想自己编也走这条）
+#   稳定版  → 直接下载 Release 里的 universal 预编译二进制（x86_64 + arm64），秒装
+#   --HEAD  → clone main 分支从源码构建（想自己编就走这条）
 #
-# 升级版本时要改四处：version、两个 url 里的版本号、两个 sha256。
-# 取校验和（务必在 tag 推送之后算，源码 tarball 由 GitHub 现场打包）：
+# 仅支持 macOS：唤起浏览器依赖 /usr/bin/open，密钥保管依赖系统钥匙串（security），
+# 在 Linux 上即使能编译也无法正常工作，所以直接 depends_on :macos。
+#
+# 升级版本时要改三处：version、url 里的版本号、sha256。
 #   shasum -a 256 sc-<版本>-macos-universal.tar.gz
-#   curl -sL https://github.com/ygnstudio/sc-search/archive/refs/tags/v<版本>.tar.gz | shasum -a 256
 
 class Sc < Formula
   desc "Launch web searches from your terminal, with built-in AI Q&A"
   homepage "https://github.com/ygnstudio/sc-search"
-  version "0.2.1"
+  url "https://github.com/ygnstudio/sc-search/releases/download/v0.2.2/sc-0.2.2-macos-universal.tar.gz"
+  sha256 "a2a79062ccc99afaff949b7479b2a18a3b66a7db9cc8496174b7a3f31c622b68"
+  version "0.2.2"
   license "MIT"
 
-  # 预编译 universal 二进制：Apple Silicon 与 Intel 共用，无需 Rust 工具链
-  on_macos do
-    url "https://github.com/ygnstudio/sc-search/releases/download/v0.2.1/sc-0.2.1-macos-universal.tar.gz"
-    # 构建后执行 shasum -a 256 sc-0.2.1-macos-universal.tar.gz 填入下方
-    sha256 "e5874e6f8935f47d87169adfa24537e4d6e4d503283e1344ee9bed8b9946b6f7"
-  end
-
-  # 非 macOS 平台回退到源码构建
-  on_linux do
-    url "https://github.com/ygnstudio/sc-search/archive/refs/tags/v0.2.1.tar.gz"
-    # TODO: tag 推送后执行 curl -sL <上述 url> | shasum -a 256 填入下方
-    sha256 "REPLACE_WITH_SOURCE_SHA256"
-    depends_on "rust" => :build
-  end
+  depends_on :macos
 
   head do
     url "https://github.com/ygnstudio/sc-search.git", branch: "main"
@@ -40,7 +29,7 @@ class Sc < Formula
   end
 
   def install
-    if build.head? || OS.linux?
+    if build.head?
       system "cargo", "install", *std_cargo_args
     else
       bin.install "sc"
@@ -53,16 +42,27 @@ class Sc < Formula
       搜索引擎内置 7 个（Google / 必应 / DuckDuckGo / GitHub / B站 / 抖音 / 小红书）。
 
       快速上手：
+        sc 关键词                    用默认引擎搜索（出厂为 DuckDuckGo）
+        sc bilibili 测试             指定引擎（search 子命令可省略）
+        sc gh+bilibili rust          多引擎并行，一次开多个标签页
+        sc i                         交互式挑引擎再搜
         sc list                      查看内置搜索引擎
-        sc bilibili 测试             用 B 站搜索（search 子命令可省略）
-        sc edit bilibili --alias bb  改引擎的名称 / 别名 / URL
+        sc set-default google        改默认引擎
         sc tui                       打开交互式面板（引擎 + AI 协议双页签，Tab 切换）
 
       AI 问答：
         sc ai 你的问题               用默认 AI 提供方提问（首跑填 API Key）
+        sc ai --session work 问题    命名会话，按话题隔离上下文
         sc provider list             查看已配置的 AI 提供方
-        sc model                     查看当前提供方的可用模型
         sc ai --help                 查看全部 AI 选项（流式 / 管道 / 多轮 / AI 选引擎）
+
+      Shell 补全：
+        sc completions zsh > "${fpath[1]}/_sc"
+
+      配置搬家：
+        sc config export > sc.toml   导出
+        sc config import sc.toml     导入（先校验再写盘）
+        sc config backup             就地备份
 
       搜索结果由 macOS 系统设置里的默认浏览器打开；
       想固定用某个 App 时执行 sc set-browser <浏览器名称>。
@@ -104,5 +104,39 @@ class Sc < Formula
     # 禁用后拒绝搜索
     system bin/"sc", "disable", "gg"
     assert_match "禁用", shell_output("#{bin}/sc gg test --dry-run 2>&1", 1)
+
+    # 默认引擎：不带别名时走 DuckDuckGo
+    assert_match "DuckDuckGo", shell_output("#{bin}/sc set-default")
+    assert_match "https://duckduckgo.com/?q=hello%20world",
+                 shell_output("#{bin}/sc 'hello world' --dry-run")
+
+    # 换默认引擎后立即生效
+    system bin/"sc", "set-default", "bing"
+    assert_match "https://cn.bing.com/search?q=test",
+                 shell_output("#{bin}/sc test --dry-run")
+
+    # 多引擎并行：一次输出多条地址
+    multi = shell_output("#{bin}/sc gh+bilibili rust --dry-run")
+    assert_match "github.com/search?q=rust", multi
+    assert_match "search.bilibili.com/all?keyword=rust", multi
+
+    # 显式 search 下，任一别名不存在应整体失败，不打开任何一个
+    assert_match "未找到别名", shell_output("#{bin}/sc search gh+nope rust --dry-run 2>&1", 1)
+
+    # 省略式下 `gh+nope` 不是合法组合，整串退化为关键词交给默认引擎（bing）
+    assert_match "cn.bing.com/search?q=gh%2Bnope%20rust",
+                 shell_output("#{bin}/sc gh+nope rust --dry-run")
+
+    # 含 + 的普通关键词不会被误判成引擎组合
+    assert_match "q=C%2B%2B", shell_output("#{bin}/sc C++ 教程 --dry-run")
+
+    # shell 补全脚本可生成
+    assert_match "compdef sc", shell_output("#{bin}/sc completions zsh")
+
+    # 配置导出 / 导入闭环
+    (testpath/"backup.toml").write shell_output("#{bin}/sc config export")
+    assert_match "url_template", (testpath/"backup.toml").read
+    assert_match "配置已写入", shell_output("#{bin}/sc config import #{testpath}/backup.toml")
+    assert_match "格式有误", shell_output("echo 'not toml [[[' | #{bin}/sc config import 2>&1", 1)
   end
 end
