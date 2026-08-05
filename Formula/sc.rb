@@ -16,19 +16,19 @@
 class Sc < Formula
   desc "Launch web searches from your terminal, with built-in AI Q&A"
   homepage "https://github.com/ygnstudio/sc-search"
-  version "0.2.0"
+  version "0.2.1"
   license "MIT"
 
   # 预编译 universal 二进制：Apple Silicon 与 Intel 共用，无需 Rust 工具链
   on_macos do
-    url "https://github.com/ygnstudio/sc-search/releases/download/v0.2.0/sc-0.2.0-macos-universal.tar.gz"
-    # 构建后执行 shasum -a 256 sc-0.2.0-macos-universal.tar.gz 填入下方
-    sha256 "0f6fa9042acd311af0b7d934c7cb1685c9a5058c3283185f5cedd0489e2df730"
+    url "https://github.com/ygnstudio/sc-search/releases/download/v0.2.1/sc-0.2.1-macos-universal.tar.gz"
+    # 构建后执行 shasum -a 256 sc-0.2.1-macos-universal.tar.gz 填入下方
+    sha256 "e5874e6f8935f47d87169adfa24537e4d6e4d503283e1344ee9bed8b9946b6f7"
   end
 
   # 非 macOS 平台回退到源码构建
   on_linux do
-    url "https://github.com/ygnstudio/sc-search/archive/refs/tags/v0.2.0.tar.gz"
+    url "https://github.com/ygnstudio/sc-search/archive/refs/tags/v0.2.1.tar.gz"
     # TODO: tag 推送后执行 curl -sL <上述 url> | shasum -a 256 填入下方
     sha256 "REPLACE_WITH_SOURCE_SHA256"
     depends_on "rust" => :build
