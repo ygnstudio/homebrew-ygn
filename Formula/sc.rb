@@ -9,26 +9,28 @@
 #   --HEAD → clone main 分支从源码构建（macOS 想自己编也走这条）
 #
 # 升级版本时要改四处：version、两个 url 里的版本号、两个 sha256。
-# 取校验和：
+# 取校验和（务必在 tag 推送之后算，源码 tarball 由 GitHub 现场打包）：
 #   shasum -a 256 sc-<版本>-macos-universal.tar.gz
 #   curl -sL https://github.com/ygnstudio/sc-search/archive/refs/tags/v<版本>.tar.gz | shasum -a 256
 
 class Sc < Formula
-  desc "Launch web searches from your terminal with any search engine"
+  desc "Launch web searches from your terminal, with built-in AI Q&A"
   homepage "https://github.com/ygnstudio/sc-search"
-  version "0.1.0"
+  version "0.2.0"
   license "MIT"
 
   # 预编译 universal 二进制：Apple Silicon 与 Intel 共用，无需 Rust 工具链
   on_macos do
-    url "https://github.com/ygnstudio/sc-search/releases/download/v0.1.0/sc-0.1.0-macos-universal.tar.gz"
-    sha256 "dae3448db4902979035071041a0ff61ded840d9a861a7f181c24a99414cfab4c"
+    url "https://github.com/ygnstudio/sc-search/releases/download/v0.2.0/sc-0.2.0-macos-universal.tar.gz"
+    # 构建后执行 shasum -a 256 sc-0.2.0-macos-universal.tar.gz 填入下方
+    sha256 "0f6fa9042acd311af0b7d934c7cb1685c9a5058c3283185f5cedd0489e2df730"
   end
 
   # 非 macOS 平台回退到源码构建
   on_linux do
-    url "https://github.com/ygnstudio/sc-search/archive/refs/tags/v0.1.0.tar.gz"
-    sha256 "f4b9ffeef0daa35ff5e9bdebe5f2d0b8a957c62841bbd2c0864507483ada8aff"
+    url "https://github.com/ygnstudio/sc-search/archive/refs/tags/v0.2.0.tar.gz"
+    # TODO: tag 推送后执行 curl -sL <上述 url> | shasum -a 256 填入下方
+    sha256 "REPLACE_WITH_SOURCE_SHA256"
     depends_on "rust" => :build
   end
 
@@ -47,14 +49,20 @@ class Sc < Formula
 
   def caveats
     <<~EOS
-      配置文件位于 ~/.sc/config.toml，首次执行任意 sc 命令时自动生成，
-      内置 7 个搜索引擎（Google / 必应 / DuckDuckGo / GitHub / B站 / 抖音 / 小红书）。
+      配置文件位于 ~/.sc/config.toml，首次执行任意 sc 命令时自动生成。
+      搜索引擎内置 7 个（Google / 必应 / DuckDuckGo / GitHub / B站 / 抖音 / 小红书）。
 
       快速上手：
         sc list                      查看内置搜索引擎
         sc bilibili 测试             用 B 站搜索（search 子命令可省略）
         sc edit bilibili --alias bb  改引擎的名称 / 别名 / URL
-        sc tui                       打开交互式引擎管理面板（a 新增 / e 编辑 / d 删除）
+        sc tui                       打开交互式面板（引擎 + AI 协议双页签，Tab 切换）
+
+      AI 问答：
+        sc ai 你的问题               用默认 AI 提供方提问（首跑填 API Key）
+        sc provider list             查看已配置的 AI 提供方
+        sc model                     查看当前提供方的可用模型
+        sc ai --help                 查看全部 AI 选项（流式 / 管道 / 多轮 / AI 选引擎）
 
       搜索结果由 macOS 系统设置里的默认浏览器打开；
       想固定用某个 App 时执行 sc set-browser <浏览器名称>。
@@ -67,6 +75,10 @@ class Sc < Formula
 
     assert_match version.to_s, shell_output("#{bin}/sc --version")
     assert_match "search", shell_output("#{bin}/sc --help")
+
+    # AI 子命令与内置 DeepSeek 协议在线下也应可见
+    assert_match "deepseek", shell_output("#{bin}/sc ai --help")
+    assert_match "deepseek", shell_output("#{bin}/sc provider list")
 
     # 预热：首次运行会额外打印一行「已生成默认配置文件」，
     # 先让它生成好，后面比对两条命令的输出才是干净的
