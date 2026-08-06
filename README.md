@@ -36,9 +36,4 @@ brew update && brew upgrade --cask dutiui            # 升级
 brew uninstall --cask dutiui                         # 卸载
 ```
 
-> ⚠️ 应用未完成 Apple 公证。若 Gatekeeper 拦截启动，请执行：
-> ```zsh
-> xattr -cr /Applications/DutiUI.app
-> ```
-
 ---
