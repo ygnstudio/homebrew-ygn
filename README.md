@@ -27,18 +27,6 @@ brew uninstall sc                      # 卸载
 - 支持 Apple Silicon 与 Intel（预编译 universal 二进制，无需本地 Rust 工具链）；其他平台自动回退源码编译
 - 快速上手：`sc list` 查看内置引擎，`sc bilibili 测试` 直接搜索，`sc tui` 打开交互式管理面板
 
-### 施工管理 shigong-manager（应用 · cask）
-
-```zsh
-brew install --cask ygnstudio/ygn/shigong-manager
-brew update && brew upgrade --cask shigong-manager   # 升级
-brew uninstall --cask shigong-manager                # 卸载
-```
-
-> ⚠️ 应用未完成 Apple 公证。若 Gatekeeper 拦截启动，请执行：
-> ```zsh
-> xattr -cr /Applications/施工管理.app
-> ```
 
 ### DutiUI（应用 · cask）
 
@@ -54,26 +42,3 @@ brew uninstall --cask dutiui                         # 卸载
 > ```
 
 ---
-
-## 维护者命令
-
-```zsh
-# 校验 cask 语法
-brew audit --cask ygnstudio/ygn/shigong-manager
-brew audit --cask ygnstudio/ygn/dutiui
-
-# 强制重装用于测试
-brew reinstall --cask ygnstudio/ygn/dutiui
-
-# 查看 formula / cask 原始源码
-brew cat sc
-brew cat --cask ygnstudio/ygn/dutiui
-```
-
----
-
-## 注意事项
-
-- 当前应用类 cask（施工管理、DutiUI）仅支持 Apple Silicon（arm64）Mac。
-- macOS 27 等预发布测试系统不受 Homebrew 官方支持，出现版本警告属于正常情况。
-- 发布新版本时，必须同步更新对应 cask / formula 文件内的 `version` 与 `sha256`。
