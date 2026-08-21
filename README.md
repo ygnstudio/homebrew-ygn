@@ -28,12 +28,18 @@ brew uninstall sc                      # 卸载
 - 快速上手：`sc list` 查看内置引擎，`sc bilibili 测试` 直接搜索，`sc tui` 打开交互式管理面板
 
 
-### DutiUI（应用 · cask）
+### Duty（应用 · cask）
+
+macOS 菜单栏小工具：把文件扩展名「锁定」到指定默认应用，被其他应用抢占时自动恢复，并记录变更历史。
 
 ```zsh
-brew install --cask ygnstudio/ygn/dutiui
-brew update && brew upgrade --cask dutiui            # 升级
-brew uninstall --cask dutiui                         # 卸载
+brew install --cask ygnstudio/ygn/duty
+brew update && brew upgrade --cask duty              # 升级
+brew uninstall --cask duty                           # 卸载
 ```
+
+- 源码与文档：<https://github.com/ygnstudio/Duty>
+- 需要 macOS 14+，仅 Apple Silicon；未公证，首次打开被拦截时执行 `xattr -cr /Applications/Duty.app`
+- （2026-08 由 DutiUI 更名而来，旧 cask `dutiui` 已停用，请先 `brew uninstall --cask dutiui` 再安装 `duty`）
 
 ---
