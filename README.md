@@ -41,6 +41,19 @@ brew uninstall --cask duty                           # 卸载
 - 需要 macOS 14+，仅 Apple Silicon；未公证，首次打开被拦截时执行 `xattr -cr /Applications/Duty.app`
 - （2026-08 由 DutiUI 更名而来，旧 cask `dutiui` 已停用，请先 `brew uninstall --cask dutiui` 再安装 `duty`）
 
+### BuddySwap（应用 · cask）
+
+macOS 菜单栏小工具：WorkBuddy 多账号一键切换，一个账号积分不够用时保存登录态 → 一键切到另一个账号继续用，本地工作目录无缝接续。
+
+```zsh
+brew install --cask buddyswap
+brew update && brew upgrade --cask buddyswap     # 升级
+brew uninstall --cask buddyswap                  # 卸载
+```
+
+- 源码与文档：<https://github.com/ygnstudio/buddyswap>
+- 需要 macOS 13+，仅 Apple Silicon；未公证，首次打开被拦截时执行 `xattr -cr /Applications/BuddySwap.app`
+
 ## 目录结构
 
 ```
@@ -48,7 +61,8 @@ homebrew-ygn/
 ├── Formula/
 │   └── sc.rb               # sc 的 formula（universal 二进制 + 源码回退）
 └── Casks/
-    └── duty.rb             # Duty 的 cask（DMG 直链 GitHub Releases）
+    ├── duty.rb             # Duty 的 cask（DMG 直链 GitHub Releases）
+    └── buddyswap.rb        # BuddySwap 的 cask（DMG 直链 GitHub Releases）
 ```
 
 发新版时更新对应文件里的 `version` 与 `sha256` 即可，无需其他改动。
