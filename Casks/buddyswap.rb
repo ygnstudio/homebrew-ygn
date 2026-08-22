@@ -13,7 +13,6 @@ cask "buddyswap" do
   app "BuddySwap.app"
 
   caveats <<~EOS
-    应用未进行 Apple 公证，首次打开被 Gatekeeper 拦截时，终端执行：
-      xattr -cr "#{appdir}/BuddySwap.app"
+    应用未进行 Apple 公证。首次打开被 Gatekeeper 拦截时，完整命令请用 brew info --cask buddyswap 查看 Caveats 段。
   EOS
 end
