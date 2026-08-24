@@ -1,6 +1,6 @@
 cask "buddyswap" do
-  version "1.0.1"
-  sha256 "c654a80b87dcc51a8e08cd930f5f15120fde79bd7c3afa81ed65dd4ddcaf9bc7"
+  version "1.0.2"
+  sha256 "bd29727c0e3e1e7b94d1ab6193f3243f208f681d85c881f0740e9856390917a1"
 
   url "https://github.com/ygnstudio/buddyswap/releases/download/v#{version}/BuddySwap.dmg"
   name "BuddySwap"
