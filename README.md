@@ -31,18 +31,22 @@ brew uninstall --cask duty                           # 卸载
 - 需要 macOS 14+，仅 Apple Silicon；未公证，首次打开被拦截时执行 `xattr -cr /Applications/Duty.app`
 - （2026-08 由 DutiUI 更名而来，旧 cask `dutiui` 已停用，请先 `brew uninstall --cask dutiui` 再安装 `duty`）
 
-### BuddySwap（应用 · cask）
+### Blinker（应用 · cask）
 
-macOS 菜单栏小工具：WorkBuddy 多账号一键切换，一个账号积分不够用时保存登录态 → 一键切到另一个账号继续用，本地工作目录无缝接续。
+macOS 菜单栏小工具：红绿灯行为重定义与悬停放大工具。
 
 ```zsh
-brew install --cask buddyswap
-brew update && brew upgrade --cask buddyswap     # 升级
-brew uninstall --cask buddyswap                  # 卸载
+brew install --cask blinker
+brew update && brew upgrade --cask blinker       # 升级
+brew uninstall --cask blinker                    # 卸载
 ```
 
-- 源码与文档：<https://github.com/ygnstudio/buddyswap>
-- 需要 macOS 13+，仅 Apple Silicon；未公证，首次打开被拦截时执行 `xattr -cr /Applications/BuddySwap.app`
+- 源码与文档：<https://github.com/ygnstudio/Blinker>
+- 需要 macOS 15+，Universal（Apple Silicon 与 Intel）；未公证，首次打开被拦截时执行 `xattr -cr /Applications/Blinker.app`，启动后需在「系统设置 → 隐私与安全性 → 辅助功能」中授权
+
+### BuddySwap（已下架 · cask）
+
+BuddySwap 项目已于 2026-08-28 封存，cask 同步移除，`brew install --cask buddyswap` 不再可用。已安装用户可 `brew uninstall --cask buddyswap` 卸载。
 
 ## 目录结构
 
