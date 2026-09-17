@@ -1,6 +1,6 @@
 cask "blinker" do
-  version "0.2.3"
-  sha256 "a7c445be66de8d0a141b15313c86fba3f12eaab56ef1948626380b183a1e9654"
+  version "0.3.0"
+  sha256 "46b15e254df61b3b08c3f6a944276607bfe0828a76fb59e3754f68d60896bdf5"
 
   url "https://github.com/ygnstudio/Blinker/releases/download/v#{version}/Blinker-v#{version}.dmg"
   name "Blinker"
