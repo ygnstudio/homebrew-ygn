@@ -44,7 +44,7 @@ brew uninstall --cask blinker                    # 卸载
 
 ```
 homebrew-ygn/
-├── Formula/                # 当前为空（sc 已下架）
+├── Formula/                # 当前为空
 └── Casks/
     ├── blinker.rb          # Blinker 的 cask
     └── duty.rb             # Duty 的 cask（DMG 直链 GitHub Releases）
