@@ -44,10 +44,6 @@ brew uninstall --cask blinker                    # 卸载
 - 源码与文档：<https://github.com/ygnstudio/Blinker>
 - 需要 macOS 15+，Universal（Apple Silicon 与 Intel）；未公证，首次打开被拦截时执行 `xattr -cr /Applications/Blinker.app`，启动后需在「系统设置 → 隐私与安全性 → 辅助功能」中授权
 
-### BuddySwap（已下架 · cask）
-
-BuddySwap 项目已于 2026-08-28 封存，cask 同步移除，`brew install --cask buddyswap` 不再可用。已安装用户可 `brew uninstall --cask buddyswap` 卸载。
-
 ## 目录结构
 
 ```
