@@ -13,10 +13,6 @@ brew trust ygnstudio/ygn   # 新版 Homebrew Tap Trust 安全机制需要信任�
 
 ## 软件清单
 
-### sc（已下架 · formula）
-
-sc-search 仓库已于 2026-09-17 转为**私有**，`sc` formula 同步移除，`brew install sc` 不再可用。已安装用户可继续 `brew uninstall sc` 卸载；源码与文档见私有仓库 `ygnstudio/sc-search`。
-
 ### Duty（应用 · cask）
 
 macOS 菜单栏小工具：把文件扩展名「锁定」到指定默认应用，被其他应用抢占时自动恢复，并记录变更历史。
