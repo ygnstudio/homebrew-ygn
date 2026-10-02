@@ -53,23 +53,27 @@ homebrew-ygn/
 │   ├── blinker.rb          # Blinker 的 cask
 │   └── duty.rb             # Duty 的 cask（DMG 直链 GitHub Releases）
 ├── Scripts/                # Blinker 稳定版更新与校验
-└── .github/workflows/      # 校验与手动更新入口
+└── .github/workflows/      # 校验、定时更新与手动更新入口
 ```
 
 ## 更新 Blinker cask
 
-先在 [Blinker](https://github.com/ygnstudio/Blinker/releases) 发布稳定版，再从本仓库默认分支运行 Actions 中的 **Update Blinker cask**，填写完整标签，例如 `v0.4.0`。工作流会下载该版本的 DMG 和 `SHA256SUMS.txt`，核对校验值后提交 cask 的版本与 SHA-256。它不会创建应用版本，也不会把 Beta 加入稳定通道。
+向 Blinker 源码仓推送稳定版标签后，由其远端 Release 工作流测试、构建、校验并发布 DMG；本仓库的 **Update Blinker cask** 每 15 分钟检查最新稳定版，计划在每小时第 7、22、37、52 分钟运行。发现新版后，它下载实际 DMG 和 `SHA256SUMS.txt`，核对 SHA-256 后自动提交并推送 cask 更新，不需要额外的跨仓令牌，也不会把预发布版加入稳定通道；相同或更旧版本会直接跳过，不下载 DMG。
 
-本地可先预览变更，再写入：
+如需立即检查，可从本仓库默认分支手动运行同一工作流：`tag` 留空检查最新稳定版，或填写已经发布的稳定版标签。指定标签同样不能绕过校验或降级保护。
+
+本地可先预览变更，再写入并自行提交、推送：
 
 ```sh
 python3 Scripts/test-update-blinker.py
-python3 Scripts/update-blinker.py v0.4.0
-python3 Scripts/update-blinker.py v0.4.0 --write
+python3 Scripts/update-blinker.py --latest
+python3 Scripts/update-blinker.py --latest --write
 ruby -c Casks/blinker.rb
 ```
 
-以上版本号是示例，必须替换为已经发布的稳定版。脚本拒绝草稿、预发布版、降级、缺失或不匹配的资产，以及同一版本校验值发生变化的情况。默认只展示差异；检查失败时不修改 cask。版本更新后，用户通过 `brew update` 和 `brew upgrade` 获取更新。
+指定版本可将 `--latest` 换为完整标签，例如 `v0.4.0`；标签必须已经发布。指定版本模式会校验实际 DMG，拒绝草稿、预发布版、降级、缺失或不匹配的资产，以及同一版本校验值发生变化的情况。默认只展示差异；检查失败时不修改 cask。版本更新后，用户通过 `brew update` 和 `brew upgrade` 获取更新。
+
+GitHub 调度可能延迟，发布后不会立即同步。公开仓库连续 60 天无活动时，定时任务会被停用；长期未更新时请检查 Actions 并按需重新启用，详见 [GitHub 定时任务说明](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#schedule)。
 
 其他软件仍按其发布流程维护对应 cask 的 `version` 与 `sha256`。
 

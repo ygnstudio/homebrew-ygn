@@ -1,5 +1,6 @@
 import hashlib
 import importlib.util
+import json
 from pathlib import Path
 import tempfile
 import unittest
@@ -55,7 +56,6 @@ class UpdateTests(unittest.TestCase):
         self.assertEqual(updater.replacement(self.source, "v0.3.0", "1" * 64), self.source)
 
     def run_update(self, cask, write=False, digest=None):
-        import json
         metadata = json.dumps(self.release()).encode()
         manifest = f"{self.checksum}  Blinker-{self.tag}.dmg\n".encode()
         with patch.object(updater, "read_url", side_effect=[metadata, manifest]), \
@@ -90,6 +90,103 @@ class UpdateTests(unittest.TestCase):
                 updater.update(self.tag, cask, write=True)
             fetch.assert_not_called()
             self.assertEqual(target.read_text(), self.source)
+
+    def test_latest_same_or_older_version_does_not_download_assets(self):
+        for tag in ("v0.3.0", "v0.2.0"):
+            with self.subTest(tag=tag), tempfile.TemporaryDirectory() as directory:
+                cask = Path(directory) / "blinker.rb"
+                cask.write_text(self.source)
+                metadata = dict(self.release(), tag_name=tag, assets=[])
+                with patch.object(updater, "read_url", return_value=json.dumps(metadata).encode()) as fetch, \
+                        patch.object(updater, "download_digest") as download:
+                    self.assertFalse(updater.update(None, cask, write=True))
+                    fetch.assert_called_once_with(
+                        "https://api.github.com/repos/ygnstudio/Blinker/releases/latest", 1024 * 1024)
+                    download.assert_not_called()
+                self.assertEqual(cask.read_text(), self.source)
+
+    def test_latest_new_stable_release_verifies_then_updates_atomically(self):
+        with tempfile.TemporaryDirectory() as directory:
+            cask = Path(directory) / "blinker.rb"
+            cask.write_text(self.source)
+            manifest = f"{self.checksum}  Blinker-{self.tag}.dmg\n".encode()
+            with patch.object(updater, "read_url", side_effect=[json.dumps(self.release()).encode(), manifest]) as fetch, \
+                    patch.object(updater, "download_digest", return_value=self.checksum) as download:
+                self.assertTrue(updater.update(None, cask, write=True))
+                self.assertEqual(fetch.call_count, 2)
+                self.assertTrue(fetch.call_args_list[0].args[0].endswith("/releases/latest"))
+                download.assert_called_once_with(
+                    "https://github.com/ygnstudio/Blinker/releases/download/v0.4.0/Blinker-v0.4.0.dmg")
+            self.assertEqual(cask.read_text(), updater.replacement(self.source, self.tag, self.checksum))
+            self.assertEqual(list(Path(directory).iterdir()), [cask])
+
+    def test_latest_invalid_metadata_or_missing_asset_leaves_cask_unchanged(self):
+        cases = [None, [], dict(self.release(), prerelease=True), dict(self.release(), draft=True),
+                 dict(self.release(), tag_name="v0.4.0-beta.1"), dict(self.release(), assets=[])]
+        for metadata in cases:
+            with self.subTest(metadata=metadata), tempfile.TemporaryDirectory() as directory:
+                cask = Path(directory) / "blinker.rb"
+                cask.write_text(self.source)
+                with patch.object(updater, "read_url", return_value=json.dumps(metadata).encode()), \
+                        patch.object(updater, "download_digest") as download, self.assertRaises(ValueError):
+                    updater.update(None, cask, write=True)
+                download.assert_not_called()
+                self.assertEqual(cask.read_text(), self.source)
+
+    def test_latest_hash_mismatch_or_download_error_does_not_replace_cask(self):
+        for digest, failure in (("0" * 64, None), (None, OSError("download interrupted"))):
+            with self.subTest(failure=failure), tempfile.TemporaryDirectory() as directory:
+                cask = Path(directory) / "blinker.rb"
+                cask.write_text(self.source)
+                manifest = f"{self.checksum}  Blinker-{self.tag}.dmg\n".encode()
+                with patch.object(updater, "read_url", side_effect=[json.dumps(self.release()).encode(), manifest]), \
+                        patch.object(updater, "download_digest", return_value=digest, side_effect=failure), \
+                        self.assertRaises((ValueError, OSError)):
+                    updater.update(None, cask, write=True)
+                self.assertEqual(cask.read_text(), self.source)
+
+    def test_manual_same_version_still_checks_for_changed_release_contents(self):
+        with tempfile.TemporaryDirectory() as directory:
+            cask = Path(directory) / "blinker.rb"
+            source = updater.replacement(self.source, self.tag, self.checksum)
+            cask.write_text(source)
+            manifest = f"{'0' * 64}  Blinker-{self.tag}.dmg\n".encode()
+            with patch.object(updater, "read_url", side_effect=[json.dumps(self.release()).encode(), manifest]), \
+                    patch.object(updater, "download_digest", return_value="0" * 64) as download, \
+                    self.assertRaises(ValueError):
+                updater.update(self.tag, cask, write=True)
+            download.assert_called_once()
+            self.assertEqual(cask.read_text(), source)
+
+    def test_latest_does_not_overwrite_edits_made_during_download(self):
+        with tempfile.TemporaryDirectory() as directory:
+            cask = Path(directory) / "blinker.rb"
+            cask.write_text(self.source)
+            edited = self.source + "# independent edit\n"
+            manifest = f"{self.checksum}  Blinker-{self.tag}.dmg\n".encode()
+
+            def concurrent_edit(_):
+                cask.write_text(edited)
+                return self.checksum
+
+            with patch.object(updater, "read_url", side_effect=[json.dumps(self.release()).encode(), manifest]), \
+                    patch.object(updater, "download_digest", side_effect=concurrent_edit), \
+                    self.assertRaises(ValueError):
+                updater.update(None, cask, write=True)
+            self.assertEqual(cask.read_text(), edited)
+            self.assertEqual(list(Path(directory).iterdir()), [cask])
+
+    def test_cli_keeps_dry_run_default_and_manual_tag_mode(self):
+        with patch.object(updater, "update") as update:
+            updater.main(["--latest"])
+            self.assertIsNone(update.call_args.args[0])
+            self.assertFalse(update.call_args.args[2])
+            updater.main(["--latest", "--write"])
+            self.assertIsNone(update.call_args.args[0])
+            self.assertTrue(update.call_args.args[2])
+            updater.main([self.tag, "--write"])
+            self.assertEqual(update.call_args.args[0], self.tag)
+            self.assertTrue(update.call_args.args[2])
 
 
 if __name__ == "__main__":

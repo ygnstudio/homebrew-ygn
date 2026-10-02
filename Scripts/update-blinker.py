@@ -17,7 +17,7 @@ STABLE = re.compile(r"v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\Z")
 
 
 def version(tag):
-    match = STABLE.fullmatch(tag)
+    match = STABLE.fullmatch(tag) if isinstance(tag, str) else None
     if not match:
         raise ValueError("Use a stable tag such as v0.4.0; prereleases are not accepted.")
     return tuple(int(part) for part in match.groups())
@@ -50,10 +50,20 @@ def download_digest(url):
     return digest.hexdigest()
 
 
-def asset_url(release, tag, filename):
-    if (release.get("tag_name") != tag or release.get("draft") is not False
+def stable_release_tag(release):
+    if not isinstance(release, dict):
+        raise ValueError("Expected a GitHub release object.")
+    tag = release.get("tag_name")
+    version(tag)
+    if (release.get("draft") is not False
             or release.get("prerelease") is not False):
         raise ValueError("The requested tag is not a published stable release.")
+    return tag
+
+
+def asset_url(release, tag, filename):
+    if stable_release_tag(release) != tag:
+        raise ValueError("The release does not match the requested tag.")
     assets = [asset for asset in release.get("assets", []) if asset.get("name") == filename]
     expected = f"https://github.com/{REPOSITORY}/releases/download/{tag}/{filename}"
     if len(assets) != 1 or assets[0].get("browser_download_url") != expected:
@@ -72,29 +82,44 @@ def manifest_digest(data, filename):
     return matches[0]
 
 
-def replacement(source, tag, checksum):
-    proposed = version(tag)
+def cask_values(source):
     if not source.startswith('cask "blinker" do\n'):
         raise ValueError("Expected the Blinker cask.")
     versions = re.findall(r'^  version "([^"]+)"$', source, re.MULTILINE)
     checksums = re.findall(r'^  sha256 "([0-9a-f]{64})"$', source, re.MULTILINE)
     if len(versions) != 1 or len(checksums) != 1:
         raise ValueError("Expected one version and one pinned SHA-256 in the cask.")
-    current = version("v" + versions[0])
+    version("v" + versions[0])
+    return versions[0], checksums[0]
+
+
+def replacement(source, tag, checksum):
+    proposed = version(tag)
+    current_version, current_checksum = cask_values(source)
+    current = version("v" + current_version)
     if proposed < current:
         raise ValueError("Refusing to downgrade the stable cask.")
-    if proposed == current and checksum != checksums[0]:
+    if proposed == current and checksum != current_checksum:
         raise ValueError("An existing version has a different checksum; investigate instead of replacing it.")
-    result = source.replace(f'  version "{versions[0]}"', f'  version "{tag[1:]}"', 1)
-    return result.replace(f'  sha256 "{checksums[0]}"', f'  sha256 "{checksum}"', 1)
+    result = source.replace(f'  version "{current_version}"', f'  version "{tag[1:]}"', 1)
+    return result.replace(f'  sha256 "{current_checksum}"', f'  sha256 "{checksum}"', 1)
 
 
 def update(tag, cask, write=False):
-    version(tag)
+    # A missing tag is the polling mode. An explicit tag always revalidates its assets.
+    if tag is not None:
+        version(tag)
     if cask.is_symlink() or not cask.is_file():
         raise ValueError("The cask must be an existing regular file, not a symlink.")
     original = cask.read_text()
-    release = json.loads(read_url(f"https://api.github.com/repos/{REPOSITORY}/releases/tags/{tag}", 1024 * 1024))
+    current, _ = cask_values(original)
+    endpoint = "latest" if tag is None else f"tags/{tag}"
+    release = json.loads(read_url(f"https://api.github.com/repos/{REPOSITORY}/releases/{endpoint}", 1024 * 1024))
+    if tag is None:
+        tag = stable_release_tag(release)
+        if version(tag) <= version("v" + current):
+            print(f"Latest stable {tag} is not newer than {current}; no asset download or cask change.")
+            return False
     filename = f"Blinker-{tag}.dmg"
     dmg = asset_url(release, tag, filename)
     sums = asset_url(release, tag, "SHA256SUMS.txt")
@@ -123,11 +148,14 @@ def update(tag, cask, write=False):
     return True
 
 
-def main():
+def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("tag", help="Published stable tag, e.g. v0.4.0")
+    parser.add_argument("tag", nargs="?", help="Published stable tag, e.g. v0.4.0")
+    parser.add_argument("--latest", action="store_true", help="Check for a newer stable release; skip unchanged assets")
     parser.add_argument("--write", action="store_true", help="Apply the verified update; otherwise show a diff only")
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
+    if bool(args.tag) == args.latest:
+        parser.error("Choose a stable tag or --latest, but not both.")
     try:
         update(args.tag, Path(__file__).resolve().parents[1] / "Casks/blinker.rb", args.write)
     except (ValueError, OSError) as error:
