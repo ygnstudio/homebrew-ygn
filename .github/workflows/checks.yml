@@ -1,0 +1,17 @@
+name: Checks
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 Scripts/test-update-blinker.py
+      - run: ruby -c Casks/blinker.rb
+      - run: git diff --check
