@@ -13,5 +13,5 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: python3 Scripts/test-update-blinker.py
-      - run: ruby -c Casks/blinker.rb
+      - run: for cask in Casks/*.rb; do ruby -c "$cask" || exit 1; done
       - run: git diff --check

@@ -14,6 +14,23 @@ brew tap ygnstudio/ygn
 
 ## 软件清单
 
+### FinderWrap
+
+为 Finder 图标视图补充左右键跨行导航：行末按右键进入下一行首项，行首按左键返回上一行末项。
+
+```zsh
+brew install --cask ygnstudio/ygn/finderwrap
+brew update
+brew upgrade --cask ygnstudio/ygn/finderwrap
+brew uninstall --cask ygnstudio/ygn/finderwrap
+```
+
+- 需要 macOS 15+，Universal 2（Apple Silicon 与 Intel）；主要实机验证环境为 macOS 26.6.2 / Apple Silicon。
+- [源码与文档](https://github.com/ygnstudio/FinderWrap)按 MIT 许可证公开，安装包见 [FinderWrap Releases](https://github.com/ygnstudio/FinderWrap/releases)。
+- 使用固定自签证书，未做 Apple 公证。Homebrew 保留系统安全检查；首次打开被拦截时，核对来源后到「系统设置 → 隐私与安全性」允许打开。
+- 需授权辅助功能、输入监控，再开启「左右键自动换行」。旧 ad-hoc 包首次迁移可能需重新授权；固定签名升级后的实机权限保留仍待验收。
+- 已手动安装时，先退出并备份原应用，再安排迁移；不要直接使用 `--force` 覆盖。Quick Look、自由排列、屏外目标和无法确认的布局保持 Finder 原生行为；选择无法确认时自动暂停，可在面板重新开启。
+
 ### Duty（应用 · cask）
 
 macOS 菜单栏小工具：把文件扩展名「锁定」到指定默认应用，被其他应用抢占时自动恢复，并记录变更历史。
@@ -51,6 +68,7 @@ homebrew-ygn/
 ├── Formula/                # 当前为空
 ├── Casks/
 │   ├── blinker.rb          # Blinker 的 cask
+│   ├── finderwrap.rb       # FinderWrap 的 cask（固定签名包）
 │   └── duty.rb             # Duty 的 cask（DMG 直链 GitHub Releases）
 ├── Scripts/                # Blinker 稳定版更新与校验
 └── .github/workflows/      # 校验、定时更新与手动更新入口
@@ -76,6 +94,8 @@ ruby -c Casks/blinker.rb
 GitHub 调度可能延迟，发布后不会立即同步。公开仓库连续 60 天无活动时，定时任务会被停用；长期未更新时请检查 Actions 并按需重新启用，详见 [GitHub 定时任务说明](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#schedule)。
 
 其他软件仍按其发布流程维护对应 cask 的 `version` 与 `sha256`。
+
+FinderWrap 从 CI 取得固定签名的 DMG、ZIP、校验文件和签名清单，经验签后发布到其源码仓库的 `v<版本>` Release，再更新本仓库 cask 的版本、构建号和 DMG SHA-256。它不使用 Actions 临时下载地址，不在 Homebrew 安装时重新编译或重新签名。签名私钥保存在 Actions Secrets；证书变更须作为明确的迁移处理，不能自动更换。
 
 ## License
 
