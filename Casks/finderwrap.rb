@@ -1,6 +1,6 @@
 cask "finderwrap" do
-  version "1.0.1,3"
-  sha256 "e367b8d194e3ee35f5b7eaef7b626a7672a4347b8de878207bd5bcc8f39a4e94"
+  version "1.0.2,5"
+  sha256 "e1ce7b2bf68d342800eb988ae8644a1bca7083eb97b161eebc2fbb17aa148e27"
 
   url "https://github.com/ygnstudio/FinderWrap/releases/download/v#{version.csv.first}/FinderWrap-#{version.csv.first}-b#{version.csv.second}-fixed-universal.dmg"
   name "FinderWrap"
