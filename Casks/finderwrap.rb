@@ -1,6 +1,6 @@
 cask "finderwrap" do
-  version "1.0.11,14"
-  sha256 "9247cdc65acc86c7a660bf5b88dc71a3b5e9c3f08ecd60bb7ca3dcb659962a23"
+  version "1.0.12,15"
+  sha256 "d8676ad7dd3b4f4843a4bb5ff2c13c0f6f1a01103e7588c48ceab292aba5b88a"
 
   url "https://github.com/ygnstudio/FinderWrap/releases/download/v#{version.csv.first}/FinderWrap-#{version.csv.first}-b#{version.csv.second}-fixed-arm64.dmg"
   name "FinderWrap"
@@ -35,5 +35,6 @@ cask "finderwrap" do
     应用只驻留菜单栏（无 Dock 图标与主窗口），点菜单栏图标即可开关、查看权限与复制诊断。
     从旧 ad-hoc 版本首次迁移时，可能需要重新授权；后续更新沿用同一签名身份。
     手动安装的用户请先退出并备份原应用，避免直接覆盖正在运行的版本。
+    卸载前请先在面板「启动」区关闭开机启动，避免登录项残留。
   EOS
 end

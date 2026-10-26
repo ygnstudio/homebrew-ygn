@@ -16,7 +16,7 @@ brew tap ygnstudio/ygn
 
 ### FinderWrap
 
-为 Finder 图标视图补充左右键跨行导航：行末按右键进入下一行首项，行首按左键返回上一行末项；按住 Shift 时多选范围也可跨行扩展；该行为可在面板「视图」区单独关闭。
+为 Finder 图标视图补充左右键跨行导航：行末按右键进入下一行首项，行首按左键返回上一行末项；按住 Shift 时多选范围也可跨行扩展；该行为可在面板「视图」区单独关闭。支持开机启动（面板「启动」区，可随时关闭）。
 
 ```zsh
 brew install --cask ygnstudio/ygn/finderwrap
