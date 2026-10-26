@@ -1,15 +1,15 @@
 cask "finderwrap" do
-  version "1.0.3,6"
-  sha256 "1258fadf79b7fa4f53e1b30f96343fc6e2238f85209b2d597c5644b73a0899ed"
+  version "1.0.6,9"
+  sha256 "456a7222002baa8a40cbe1376ba63d3d16cc90ca7d917813b47c92ffdfbfe167"
 
-  url "https://github.com/ygnstudio/FinderWrap/releases/download/v#{version.csv.first}/FinderWrap-#{version.csv.first}-b#{version.csv.second}-fixed-universal.dmg"
+  url "https://github.com/ygnstudio/FinderWrap/releases/download/v#{version.csv.first}/FinderWrap-#{version.csv.first}-b#{version.csv.second}-fixed-arm64.dmg"
   name "FinderWrap"
   desc "Row-wrapping arrow-key navigation for Finder icon views"
   homepage "https://github.com/ygnstudio/FinderWrap"
 
   livecheck do
     url :url
-    regex(/^FinderWrap-(\d+(?:\.\d+)+)-b(\d+)-fixed-universal\.dmg$/i)
+    regex(/^FinderWrap-(\d+(?:\.\d+)+)-b(\d+)-fixed-arm64\.dmg$/i)
     strategy :github_latest do |json, regex|
       Array(json["assets"]).filter_map do |asset|
         match = asset["name"]&.match(regex)
@@ -20,7 +20,8 @@ cask "finderwrap" do
     end
   end
 
-  depends_on macos: :sequoia
+  depends_on arch: :arm64
+  depends_on macos: :ventura
 
   app "FinderWrap.app"
 
@@ -29,7 +30,9 @@ cask "finderwrap" do
   caveats <<~EOS
     应用使用固定自签证书，未进行 Apple 公证；Homebrew 保留系统安全检查。
     首次打开若被拦截，请核对来源，再到「系统设置 → 隐私与安全性」允许打开。
-    启动后需开启辅助功能、输入监控，再启用「左右键自动换行」。
+    1.0.6 起仅提供 Apple Silicon（arm64），最低 macOS 13；Intel 用户请保留 1.0.3。
+    只需开启辅助功能、输入监控，再启用「左右键自动换行」；开关状态会被记住。
+    应用只驻留菜单栏（无 Dock 图标与主窗口），点菜单栏图标即可开关、查看权限与复制诊断。
     从旧 ad-hoc 版本首次迁移时，可能需要重新授权；后续更新沿用同一签名身份。
     手动安装的用户请先退出并备份原应用，避免直接覆盖正在运行的版本。
   EOS
