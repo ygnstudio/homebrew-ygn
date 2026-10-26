@@ -16,7 +16,7 @@ brew tap ygnstudio/ygn
 
 ### FinderWrap
 
-为 Finder 图标视图补充左右键跨行导航：行末按右键进入下一行首项，行首按左键返回上一行末项。
+为 Finder 图标视图补充左右键跨行导航：行末按右键进入下一行首项，行首按左键返回上一行末项；按住 Shift 时多选范围也可跨行扩展。
 
 ```zsh
 brew install --cask ygnstudio/ygn/finderwrap
@@ -26,6 +26,7 @@ brew uninstall --cask ygnstudio/ygn/finderwrap
 ```
 
 - 需要 macOS 13+，仅 Apple Silicon（arm64）；主要实机验证环境为 macOS 26.6.2 / Apple Silicon。Intel 用户请继续使用 1.0.3（旧 Universal 版）。
+- 菜单面板支持跟随系统 / 中文 / English 与深色模式；列表左右切项、画廊到头循环为独立开关。
 - macOS 15 / 27 尚未实机验收；出现“无反应”时请点菜单栏图标 →「复制诊断信息」回传（不含文件名与路径）。
 - [源码与文档](https://github.com/ygnstudio/FinderWrap)按 MIT 许可证公开，安装包见 [FinderWrap Releases](https://github.com/ygnstudio/FinderWrap/releases)。
 - 使用固定自签证书，未做 Apple 公证。Homebrew 保留系统安全检查；首次打开被拦截时，核对来源后到「系统设置 → 隐私与安全性」允许打开。
