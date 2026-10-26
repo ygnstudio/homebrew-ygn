@@ -1,6 +1,6 @@
 cask "finderwrap" do
-  version "1.0.6,9"
-  sha256 "456a7222002baa8a40cbe1376ba63d3d16cc90ca7d917813b47c92ffdfbfe167"
+  version "1.0.7,10"
+  sha256 "feccaec325f2d2ee96b8801be5df4f693f7b2e00b0121a1c0b9d929bdeab7fc4"
 
   url "https://github.com/ygnstudio/FinderWrap/releases/download/v#{version.csv.first}/FinderWrap-#{version.csv.first}-b#{version.csv.second}-fixed-arm64.dmg"
   name "FinderWrap"
@@ -30,7 +30,7 @@ cask "finderwrap" do
   caveats <<~EOS
     应用使用固定自签证书，未进行 Apple 公证；Homebrew 保留系统安全检查。
     首次打开若被拦截，请核对来源，再到「系统设置 → 隐私与安全性」允许打开。
-    1.0.6 起仅提供 Apple Silicon（arm64），最低 macOS 13；Intel 用户请保留 1.0.3。
+    仅提供 Apple Silicon（arm64），最低 macOS 13；Intel 用户请保留 1.0.3。
     只需开启辅助功能、输入监控，再启用「左右键自动换行」；开关状态会被记住。
     应用只驻留菜单栏（无 Dock 图标与主窗口），点菜单栏图标即可开关、查看权限与复制诊断。
     从旧 ad-hoc 版本首次迁移时，可能需要重新授权；后续更新沿用同一签名身份。

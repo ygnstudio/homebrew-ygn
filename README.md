@@ -30,6 +30,7 @@ brew uninstall --cask ygnstudio/ygn/finderwrap
 - [源码与文档](https://github.com/ygnstudio/FinderWrap)按 MIT 许可证公开，安装包见 [FinderWrap Releases](https://github.com/ygnstudio/FinderWrap/releases)。
 - 使用固定自签证书，未做 Apple 公证。Homebrew 保留系统安全检查；首次打开被拦截时，核对来源后到「系统设置 → 隐私与安全性」允许打开。
 - 只需授权辅助功能、输入监控（不再需要“自动化 Finder”），再开启「左右键自动换行」。旧 ad-hoc 包首次迁移可能需重新授权。
+- 支持中英双语界面与浅色/深色外观（均可跟随系统），在菜单栏面板底部切换，立即生效并记住。
 - 已手动安装时，先退出并备份原应用，再安排迁移；不要直接使用 `--force` 覆盖。
 - 覆盖范围：图标视图（桌面、Quick Look、分组、搜索、多选）跨行换行；画廊到头循环；列表左右键切上一项/下一项（端点不循环）；分栏与重命名保持原生。
 
